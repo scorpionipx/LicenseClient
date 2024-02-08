@@ -22,7 +22,9 @@ set(SOURCES
 include_directories(src)
 
 # Add dependencies
-include_directories(vcpkg/installed/x64-windows/include)
+if(WIN32)
+    include_directories(vcpkg/installed/x64-windows/include)
+endif()
 
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
