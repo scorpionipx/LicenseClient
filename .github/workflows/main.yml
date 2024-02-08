@@ -8,11 +8,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, ubuntu-latest]
+        os: [windows-latest] #, ubuntu-latest]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+
+    - name: Install dependencies
+      if: ${{ matrix.os == 'windows-latest' }}
+      run: |
+        git clone https://github.com/microsoft/vcpkg.git
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg install nlohmann-json curl
 
     - name: Configure CMake
       run: cmake -Bbuild
