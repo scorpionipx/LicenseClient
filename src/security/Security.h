@@ -3,9 +3,6 @@
 #include <iostream>
 #include <string>
 #include <sstream>
-#include <windows.h>
-#include <wincred.h>
-#include <wincrypt.h>
 #include <locale>
 #include <codecvt>
 
