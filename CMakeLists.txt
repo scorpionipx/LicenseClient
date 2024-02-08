@@ -12,7 +12,6 @@ set(SOURCES
     src/pch.cpp
     src/wrapper.cpp
     src/licfile/LicFile.cpp
-    src/manager
     src/security/Security.cpp
     src/server/Server.cpp
     src/utils/utils.cpp
