@@ -21,7 +21,7 @@ extern "C"
 		return mode.c_str();
 	}
 	// Export Set License Mode
-	__declspec(dllexport) const char* setMode(Client* client, const char* mode, const char* params[]) {
+	__declspec(dllexport) void setMode(Client* client, const char* mode, const char* params[]) {
 		std::string licFilepath = params[0];
 		std::string lmServer = params[1];
 		std::string lmPort = params[2];
