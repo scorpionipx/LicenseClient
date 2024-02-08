@@ -21,6 +21,9 @@ set(SOURCES
 # Add headers for IDE support
 include_directories(src)
 
+# Add dependencies
+include_directories(vcpkg/installed/x64-windows/include)
+
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
 

@@ -19,7 +19,7 @@ jobs:
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg install nlohmann-json curl
+        .\vcpkg\vcpkg install cryptopp curl nlohmann-json
 
     - name: Configure CMake
       run: cmake -Bbuild
