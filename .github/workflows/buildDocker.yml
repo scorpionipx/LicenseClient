@@ -2,9 +2,9 @@ name: buildDocker
 
 on:
   workflow_dispatch:
-  inputs:
-    platform:
-      description: 'Platform'
+    inputs:
+      platform:
+        description: 'Platform'
         required: true
         default: 'win'
         type: choice
