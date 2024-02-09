@@ -14,18 +14,23 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install dependencies
+    - name: Install dependencies (Win)
+      if: ${{ matrix.os == 'windows-latest' }}
       env:
         DEPENDENCIES: cryptopp curl nlohmann-json opencv2
       run: |
         git clone https://github.com/microsoft/vcpkg.git
-        if [ "${{ runner.os }}" == "Windows" ]; then
-          .\vcpkg\bootstrap-vcpkg.bat
-          .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
-        else
+        .\vcpkg\bootstrap-vcpkg.bat
+        .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
+    
+    - name: Install dependencies (Linux)
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      env:
+        DEPENDENCIES: cryptopp curl nlohmann-json opencv2
+      run: |
+          git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }}
-        fi
 
     - name: Configure CMake
       run: cmake -Bbuild
