@@ -1,0 +1,25 @@
+# Start from the Windows 10 Enterprise image
+FROM mcr.microsoft.com/windows:ltsc2019
+
+ENV http_proxy="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
+ENV http_proxys="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
+ENV HTTP_PROXY="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
+ENV HTTP_PROXYS="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
+ENV DEPENDENCIES="cryptopp curl nlohmann-json opencv2"
+
+# Download the Git installer from the official Git website
+ADD https://github.com/git-for-windows/git/releases/download/v2.35.1.windows.1/Git-2.35.1-64-bit.exe C:\\work\\git-install.exe
+
+# Install Git
+RUN C:\\work\\git-install.exe /VERYSILENT /NORESTART /SP- /SUPPRESSMSGBOXES
+
+# Add Git to the PATH
+RUN setx PATH "%PATH%;C:\Program Files\Git\cmd;C:\Program Files\Git\bin" /M
+
+# Set the working directory in the container
+WORKDIR C:\\work
+
+# Git clone vcpkg and install packages
+RUN cmd.exe /C "git clone https://github.com/microsoft/vcpkg.git"
+RUN cmd.exe /C "cd vcpkg && .\bootstrap-vcpkg.bat"
+RUN cmd.exe /C ".\vcpkg install %DEPENDENCIES%"
