@@ -8,18 +8,24 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest] #, ubuntu-latest]
+        os: [windows-latest, ubuntu-latest]
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Install dependencies
-      if: ${{ matrix.os == 'windows-latest' }}
+      env:
+        DEPENDENCIES: cryptopp curl nlohmann-json opencv2
       run: |
         git clone https://github.com/microsoft/vcpkg.git
-        .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg install cryptopp curl nlohmann-json opencv2
+        if [ "${{ runner.os }}" == "Windows" ]; then
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
+        else
+          ./vcpkg/bootstrap-vcpkg.sh
+          ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }}
+        fi
 
     - name: Configure CMake
       run: cmake -Bbuild

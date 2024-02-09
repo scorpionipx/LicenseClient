@@ -21,10 +21,12 @@ set(SOURCES
 # Add headers for IDE support
 include_directories(src)
 
+set(OpenCV_DIR "${VCPKG_INSTALLED_DIR}/x64-windows/share/opencv2")
+find_package(OpenCV REQUIRED)
+
 # Add dependencies
-if(WIN32)
-    include_directories(vcpkg/installed/x64-windows/include)
-endif()
+# include_directories(vcpkg/installed/x64-windows/include)
+include_directories(${VCPKG_INSTALLED_DIR}/x64-windows/share)
 
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
