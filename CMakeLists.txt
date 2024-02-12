@@ -21,6 +21,10 @@ set(SOURCES
 # Add headers for IDE support
 include_directories(src)
 
+# Add dependencies
+# include_directories(vcpkg/installed/x64-windows/include)
+include_directories(${VCPKG_INSTALLED_DIR}/x64-windows/share)
+
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(main PRIVATE nlohmann_json::nlohmann_json)
 find_package(CImg CONFIG REQUIRED)
