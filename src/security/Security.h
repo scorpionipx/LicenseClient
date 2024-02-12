@@ -6,6 +6,10 @@
 #include <locale>
 #include <codecvt>
 
+#define cimg_display 0
+#define cimg_use_png 1
+#include "CImg.h"
+
 #include <cryptopp/aes.h>
 #include <cryptopp/base64.h>
 #include <cryptopp/cryptlib.h>
@@ -16,12 +20,10 @@
 #include <cryptopp/osrng.h>
 #include <cryptopp/rsa.h>
 #include <nlohmann/json.hpp>
-#include <opencv2/opencv.hpp>
 
 #include "..\utils\utils.h"
 
 using namespace CryptoPP;
-using namespace cv;
 using json = nlohmann::json;
 
 class Security {

@@ -110,82 +110,73 @@ void Security::loadAESKey() {
 
 void Security::setKey(const std::string& text) {
 
-    Mat img = imread(imageFilepath);
-    if (img.empty()) {
-        std::cerr << "Error: Could not open or find the image!" << std::endl;
+    // Load input image
+    cimg_library::CImg<unsigned char> image;
+    image.load_png(imageFilepath.c_str());
+    
+    // Calculate message length and make sure it fits in the image
+    size_t messageLength = text.length();
+    if (messageLength * 8 > image.width() * image.height() * image.spectrum()) {
+        std::cerr << "Key store failed.\n";
         return;
     }
 
-    int charPositionInText = 0;
-    int bitPositionInChar = 0;
+    size_t bitIndex = 0;
 
-    for (int row = 0; row < img.rows; row++) {
-        for (int col = 0; col < img.cols; col++) {
-            // Get pixel
-            Vec3b pixel = img.at<Vec3b>(Point(row, col));
-            // For each channel (B, G, R)
-            for (int rgb = 0; rgb < 3; rgb++) {
-
-                if (charPositionInText >= text.length()) {
-                    // Save the encoded image
-                    imwrite(imageFilepath, img);
-                    return;
-                }
-
+    // Hide message in image data
+    cimg_forXY(image, x, y) {
+        cimg_forC(image, rgb) {
+            if (bitIndex <= messageLength * 8) {
+                unsigned char& pixel = image(x, y, 0, rgb);
                 // Clear LSB Bit
-                pixel.val[rgb] &= 0xFE;
-                // Set LSB Bit
-                pixel.val[rgb] |= (text[charPositionInText] >> bitPositionInChar) & 1;
-                // Update bit and character position
-                bitPositionInChar = (bitPositionInChar + 1) % 8;
-                if (bitPositionInChar == 0) {
-                    charPositionInText++;
-                }
+                // pixel = (pixel & ~1)
+                // Select char from text.
+                // text[bitIndex / 8]
+                // Select bit from selected char
+                // bitIndex % 8
+                // Set LSB if needed.
+                pixel = (pixel & ~1) | ((text[bitIndex / 8] >> (bitIndex % 8)) & 0x01);
+                // Go to next bit.
+                ++bitIndex;
             }
-            // Update Pixel
-            img.at<Vec3b>(Point(row, col)) = pixel;
         }
     }
+
+    // Save modified image
+    image.save(imageFilepath.c_str());
 }
 
 std::string Security::getKey() {
 
-    Mat img = imread(imageFilepath);
-    if (img.empty()) {
-        std::cerr << "Error: Could not open or find the image!" << std::endl;
-        return "";
-    }
+    // Load input image
+    cimg_library::CImg<unsigned char> image;
+    image.load_png(imageFilepath.c_str());
 
     std::string decodedText;
     char ch = 0;
-    int bitPositionInChar = 0;
+    size_t bitIndex = 0;
 
-    for (int row = 0; row < img.rows; row++) {
-        for (int col = 0; col < img.cols; col++) {
-            Vec3b pixel = img.at<Vec3b>(Point(row, col));
-            // For each channel (B, G, R)
-            for (int rgb = 0; rgb < 3; rgb++) {
+    cimg_forXY(image, x, y) {
+        cimg_forC(image, rgb) {
+            // Extract bit
+            // (image(x, y, 0, rgb) & 1)
+            // Put in position
+            ch += (image(x, y, 0, rgb) & 0x01) << (bitIndex % 8);
+            ++bitIndex;
 
-                if (decodedText.length() >= 93) {
-                    // Message decoded completely
-                    try {
-                        json::parse(decodedText);
-                        return decodedText;
-                    }
-                    catch (const nlohmann::json::exception& e) {
-                        return "";
-                    }
+            if (bitIndex % 8 == 0) {
+                decodedText += ch;
+                ch = 0;
+            }
+
+            if (decodedText.length() >= 93) {
+                // Message decoded completely
+                try {
+                    json::parse(decodedText);
+                    return decodedText;
                 }
-
-                // Read Pixel
-                Vec3b pixel = img.at<Vec3b>(Point(row, col));
-
-                ch |= (pixel.val[rgb] & 0x01) << bitPositionInChar;
-
-                bitPositionInChar = (bitPositionInChar + 1) % 8;
-                if (bitPositionInChar == 0) {
-                    decodedText += ch;
-                    ch = 0;
+                catch (const nlohmann::json::exception& e) {
+                    return "";
                 }
             }
         }
