@@ -22,14 +22,14 @@ jobs:
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
+        .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }} --binary
     
     - name: Install dependencies (Linux)
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }}
+          ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }} --binary
 
     - name: Configure CMake
       run: cmake -Bbuild
