@@ -23,7 +23,7 @@ set(SOURCES
 include_directories(src)
 
 # Add dependencies
-include_directories($ENV{WORKSPACE}/vcpkg/installed/x64-windows/share)
+include_directories($ENV{WORKSPACE}/vcpkg/installed/x64-windows/include)
 
 find_package(nlohmann_json REQUIRED)
 
