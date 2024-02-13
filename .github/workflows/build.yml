@@ -3,7 +3,8 @@ name: build
 on: [push, pull_request]
 
 env:
-  DEPENDENCIES: cryptopp cimg curl nlohmann-json 
+  DEPENDENCIES: cryptopp cimg curl nlohmann-json
+  VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
 
 jobs:
   build:

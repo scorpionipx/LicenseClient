@@ -1,25 +1,30 @@
 # Start from the Windows 10 Enterprise image
 FROM mcr.microsoft.com/windows:ltsc2019
 
-ENV http_proxy="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
-ENV http_proxys="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
-ENV HTTP_PROXY="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
-ENV HTTP_PROXYS="http://uig42918:Continental2023@sia-proxy-basic.geo.conti.de:3128"
-ENV DEPENDENCIES="cryptopp curl nlohmann-json opencv2"
+ENV DEPENDENCIES="cimg cryptopp curl nlohmann-json"
 
+RUN mkdir temp
+
+SHELL ["powershell"]
 # Download the Git installer from the official Git website
-ADD https://github.com/git-for-windows/git/releases/download/v2.35.1.windows.1/Git-2.35.1-64-bit.exe C:\\work\\git-install.exe
+RUN Invoke-WebRequest https://github.com/git-for-windows/git/releases/download/v2.35.1.windows.1/Git-2.35.1-64-bit.exe -OutFile "C:\\temp\\git-install.exe" -UseBasicParsing
+# Download VS BuildTools
+RUN Invoke-WebRequest "https://aka.ms/vs/17/release/vs_buildtools.exe" -OutFile "C:\\temp\\vs_buildtools.exe" -UseBasicParsing
 
+SHELL ["cmd", "/S", "/C"]
 # Install Git
-RUN C:\\work\\git-install.exe /VERYSILENT /NORESTART /SP- /SUPPRESSMSGBOXES
-
+RUN C:\\temp\\git-install.exe /VERYSILENT /NORESTART /SP- /SUPPRESSMSGBOXES
 # Add Git to the PATH
 RUN setx PATH "%PATH%;C:\Program Files\Git\cmd;C:\Program Files\Git\bin" /M
+
+# Install VS BuildTools
+RUN start /w temp\\vs_buildtools.exe --quiet --wait --norestart --nocache --installPath "%ProgramFiles(x86)%\Microsoft Visual Studio\2022\BuildTools" --add Microsoft.Component.MSBuild --add Microsoft.VisualStudio.Component.VC.CMake.Project --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 || IF "%ERRORLEVEL%"=="3010" EXIT 0
+ENTRYPOINT ["C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\Common7\\Tools\\VsDevCmd.bat", "&&", "powershell.exe", "-NoLogo", "-ExecutionPolicy", "Bypass"]
 
 # Set the working directory in the container
 WORKDIR C:\\work
 
 # Git clone vcpkg and install packages
-RUN cmd.exe /C "git clone https://github.com/microsoft/vcpkg.git"
-RUN cmd.exe /C "cd vcpkg && .\bootstrap-vcpkg.bat"
-RUN cmd.exe /C ".\vcpkg install %DEPENDENCIES%"
+RUN "git clone https://github.com/microsoft/vcpkg.git"
+RUN "cd vcpkg && .\bootstrap-vcpkg.bat"
+RUN "cd vcpkg && .\vcpkg install %DEPENDENCIES%"

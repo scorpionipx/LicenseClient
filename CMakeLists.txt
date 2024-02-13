@@ -25,15 +25,6 @@ include_directories(src)
 # include_directories(vcpkg/installed/x64-windows/include)
 include_directories(${VCPKG_INSTALLED_DIR}/x64-windows/include)
 
-find_package(nlohmann_json CONFIG REQUIRED)
-target_link_libraries(main PRIVATE nlohmann_json::nlohmann_json)
-find_package(CImg CONFIG REQUIRED)
-target_link_libraries(main PRIVATE CImg::CImg)
-find_package(cryptopp CONFIG REQUIRED)
-target_link_libraries(main PRIVATE cryptopp::cryptopp)
-find_package(CURL REQUIRED)
-target_link_libraries(main PRIVATE CURL::libcurl)
-
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
 
@@ -51,12 +42,3 @@ if(WIN32)
         WINDOWS_EXPORT_ALL_SYMBOLS TRUE
     )
 endif()
-
-# Define installation directories (if needed)
-# For example, if you want to install your library
-# into /usr/local/lib on Unix-like systems
-#install(TARGETS LicenseClient DESTINATION /usr/local/lib)
-
-# Define installation for headers (if needed)
-#install(DIRECTORY src/ DESTINATION include
-#        FILES_MATCHING PATTERN "*.h")
