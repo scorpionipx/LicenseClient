@@ -70,7 +70,7 @@ std::string Client::collectData() {
 	json data;
 
 	data = json::parse(security.getAESKey());
-	data["SerialNo"] = "WEUFMAIGWRG1245135";
+	data["SerialNo"] = serialNo;
 
 	// Encrypt Data
 	std::string cipherPayload = stringToHex(security.RSAEncrypt(data.dump()));
@@ -78,9 +78,10 @@ std::string Client::collectData() {
 	return cipherPayload;
 }
 
-bool Client::loadLicense() {
+bool Client::loadLicense(const std::string& serialNo) {
 	
 	bool result = false;
+	this->serialNo = serialNo;
 
 	if (mode == modeOnline) {
 		// Collect Data & Key Exchange

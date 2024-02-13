@@ -58,9 +58,9 @@ extern "C"
 	}
 
 	// Export loadLicense function
-	__declspec(dllexport) bool loadLicense(Client* client) {
+	__declspec(dllexport) bool loadLicense(Client* client, const char* serialNo) {
 		try {
-			return client->loadLicense();
+			return client->loadLicense(serialNo);
 		} catch (const std::exception& ex) {
 			std::cerr << "Error in loadLicense: " << ex.what() << std::endl;
 			return false;

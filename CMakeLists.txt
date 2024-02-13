@@ -9,6 +9,11 @@ project(
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+# Uncomment these lines for pdb generation
+# set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
+# set(CMAKE_SHARED_LINKER_FLAGS_RELEASE "${CMAKE_SHARED_LINKER_FLAGS_RELEASE} /DEBUG /OPT:REF /OPT:ICF")
+
 list(APPEND CMAKE_PREFIX_PATH "$ENV{WORKSPACE}/vcpkg/installed/x64-windows/share")
 
 find_package(nlohmann_json REQUIRED)

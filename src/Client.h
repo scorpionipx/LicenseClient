@@ -54,10 +54,11 @@ public:
 	// Vars
 	std::string applicationName;
 	std::string applicationVersion;
+	std::string serialNo;
 
 	// Functions
 	std::string collectData();
-	bool loadLicense();
+	bool loadLicense(const std::string& serialNo);
 
 	std::string getMode();
 	void setMode(

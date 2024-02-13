@@ -168,10 +168,11 @@ std::string Security::getKey() {
                 ch = 0;
             }
 
+            // Magic Number
             if (decodedText.length() >= 93) {
                 // Message decoded completely
                 try {
-                    json::parse(decodedText);
+                    json _don_t_care = json::parse(decodedText);
                     return decodedText;
                 }
                 catch (const nlohmann::json::exception) {
