@@ -21,12 +21,14 @@ set(SOURCES
 # Add headers for IDE support
 include_directories(src)
 
+find_package(nlohmann_json REQUIRED)
+
 # Add dependencies
-# include_directories(vcpkg/installed/x64-windows/include)
 include_directories(${VCPKG_INSTALLED_DIR}/x64-windows/include)
 
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
+target_link_libraries(LicenseClient PRIVATE nlohmann_json::nlohmann_json)
 
 # Include version header
 configure_file(src/Version.h.in Version.h)

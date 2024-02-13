@@ -8,7 +8,7 @@
 
 #define cimg_display 0
 #define cimg_use_png 1
-#include "CImg.h"
+#include <CImg.h>
 
 #include <cryptopp/aes.h>
 #include <cryptopp/base64.h>
