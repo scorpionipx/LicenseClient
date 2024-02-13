@@ -3,6 +3,7 @@ project(LicenseClient VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+list(APPEND CMAKE_MODULE_PATH "$ENV{WORKSPACE}/vcpkg/installed/x64-windows/share")
 
 # Add your source files
 set(SOURCES
