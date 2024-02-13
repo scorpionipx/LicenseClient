@@ -21,10 +21,10 @@ set(SOURCES
 # Add headers for IDE support
 include_directories(src)
 
-find_package(nlohmann_json REQUIRED)
-
 # Add dependencies
-include_directories($ENV{VCPKG_INSTALLED_DIR}/x64-windows/include)
+include_directories($ENV{VCPKG_INSTALLED_DIR}/x64-windows/share)
+
+find_package(nlohmann_json REQUIRED)
 
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})
