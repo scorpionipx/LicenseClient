@@ -24,7 +24,7 @@ include_directories(src)
 find_package(nlohmann_json REQUIRED)
 
 # Add dependencies
-include_directories(${VCPKG_INSTALLED_DIR}/x64-windows/include)
+include_directories($ENV{VCPKG_INSTALLED_DIR}/x64-windows/include)
 
 # Add a target for the library
 add_library(LicenseClient SHARED ${SOURCES})

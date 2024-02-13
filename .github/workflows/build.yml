@@ -24,7 +24,7 @@ jobs:
       run: |
         git clone https://github.com/microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg integrate install
+        .\vcpkg\vcpkg integrate install
         .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
     
     - name: Install dependencies (Linux)
@@ -34,7 +34,7 @@ jobs:
       run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
-          ./vcpkg integrate install
+          ./vcpkg/vcpkg integrate install
           ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }}
 
     - name: Configure CMake
