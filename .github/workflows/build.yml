@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 env:
   DEPENDENCIES: cryptopp cimg curl nlohmann-json
-  VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
+  VCPKG_INSTALLED_DIR: ${{ runner.os == 'Windows' ? '${{ github.workspace }}\vcpkg\installed' : '${{ github.workspace }}/vcpkg/installed' }}
 
 jobs:
   build:
