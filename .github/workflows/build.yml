@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 env:
   DEPENDENCIES: cryptopp cimg curl nlohmann-json
+  WORKSPACE: ${{ github.workspace }}
 
 jobs:
   build:
@@ -18,8 +19,6 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install dependencies (Win)
-      env:
-        VCPKG_INSTALLED_DIR: ${{ github.workspace }}\vcpkg\installed
       if: ${{ matrix.os == 'windows-latest' }}
       run: |
         git clone https://github.com/microsoft/vcpkg.git
@@ -28,8 +27,6 @@ jobs:
         .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }}
     
     - name: Install dependencies (Linux)
-      env:
-        VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg/installed
       if: ${{ matrix.os == 'ubuntu-latest' }}
       run: |
           git clone https://github.com/microsoft/vcpkg.git
