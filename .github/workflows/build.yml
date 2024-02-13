@@ -46,5 +46,4 @@ jobs:
         name: build
         if-no-files-found: error
         path: |
-            build/Release/LicenseClient.dll
-            build/Release/LicenseClient.so
+            build/Release/LicClient.dll

@@ -28,7 +28,7 @@ bool LicFile::loadFile(const std::string& filePath) {
 	}
 
 	// Open a file for reading
-	std::ifstream inputFile(filePath);
+	std::ifstream inputFile(filePath, std::ios::binary);
 
 	// Check if the file is open
 	if (!inputFile.is_open()) {

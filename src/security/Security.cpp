@@ -15,8 +15,6 @@ Security::Security(const std::string& keyStorage) {
         // Generate AES Key
         generateAESKey();
 
-        // ShortTest
-
         // Store Key
         std::string _aesKey = getAESKey();
         setKey(_aesKey);
@@ -26,7 +24,6 @@ Security::Security(const std::string& keyStorage) {
         std::cout << "LoadKey called.." << std::endl;
         loadAESKey();
     }
-
 }
 
 void Security::generateAESKey() {
