@@ -6,14 +6,19 @@
 Client::Client(
 	const std::string applicationName, 
 	const std::string applicationVersion, 
-	const std::string publicKey
+	const std::string publicKey,
+	const std::string keyStorage
 ):
-	validator(applicationName, applicationVersion) {
+	validator(applicationName, applicationVersion), security(keyStorage) {
 	// Store Vars
 	this->applicationName = applicationName;
 	this->applicationVersion = applicationVersion;
 	this->publicKey = publicKey;
 	this->security.setOwnerRSAPublicKey(publicKey);
+}
+
+std::string Client::getVersion() {
+	return clientVersion;
 }
 
 // Functions
@@ -24,15 +29,15 @@ std::string Client::getMode() {
 void Client::setMode(
 	const std::string& mode,
 	const std::string& licFilepath,
-	const std::string& lmServer,
-	const std::string& lmPort
+	const std::string& serverUrl,
+	const std::string& port
 ) {
 	if (mode != modeStandalone and mode != modeLicenseManager and mode != modeOnline) {
 		return;
 	}
 	this->licFilepath = licFilepath;
-	this->lmPort = lmPort;
-	this->lmServer = lmServer;
+	this->port = port;
+	this->serverUrl = serverUrl;
 	this->mode = mode;
 }
 
@@ -81,6 +86,7 @@ bool Client::loadLicense() {
 		// Collect Data & Key Exchange
 		const std::string payload = collectData();
 		// Authentificate for validation
+		server.setUrl(serverUrl);
 		std::string licenseContent = server.request(server.requestTypeValidate, payload);
 		result = licFile.loadContent(licenseContent);
 	} else if (mode == modeStandalone) {

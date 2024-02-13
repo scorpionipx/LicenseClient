@@ -1,0 +1,20 @@
+1 VERSIONINFO
+FILEVERSION @LicClient_VERSION_MAJOR@,@LicClient_VERSION_MINOR@,@LicClient_VERSION_PATCH@
+PRODUCTVERSION @LicClient_VERSION_MAJOR@,@LicClient_VERSION_MINOR@,@LicClient_VERSION_PATCH@
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "FileVersion", "@LicClient_VERSION_MAJOR@,@LicClient_VERSION_MINOR@,@LicClient_VERSION_PATCH@"
+            VALUE "ProductName", "@PROJECT_NAME@"
+            VALUE "ProductVersion", "@LicClient_VERSION_MAJOR@,@LicClient_VERSION_MINOR@,@LicClient_VERSION_PATCH@"
+            VALUE "FileDescription", "@LicClient_DESCRIPTION@"
+            VALUE "LegalCopyright", "@LicClient_HOMEPAGE_URL@"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END

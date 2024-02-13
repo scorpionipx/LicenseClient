@@ -3,7 +3,9 @@
 #include "Security.h"
 
 
-Security::Security() {
+Security::Security(const std::string& keyStorage) {
+    this->keyStorage = keyStorage;
+
     // Initialize Crypto++ library
     CryptoPP::AutoSeededRandomPool rng;
     AESkey.resize(AES::DEFAULT_KEYLENGTH);   
@@ -112,7 +114,7 @@ void Security::setKey(const std::string& text) {
 
     // Load input image
     cimg_library::CImg<unsigned char> image;
-    image.load_png(imageFilepath.c_str());
+    image.load_png(keyStorage.c_str());
     
     // Calculate message length and make sure it fits in the image
     size_t messageLength = text.length();
@@ -143,14 +145,14 @@ void Security::setKey(const std::string& text) {
     }
 
     // Save modified image
-    image.save(imageFilepath.c_str());
+    image.save(keyStorage.c_str());
 }
 
 std::string Security::getKey() {
 
     // Load input image
     cimg_library::CImg<unsigned char> image;
-    image.load_png(imageFilepath.c_str());
+    image.load_png(keyStorage.c_str());
 
     std::string decodedText;
     char ch = 0;
@@ -175,7 +177,7 @@ std::string Security::getKey() {
                     json::parse(decodedText);
                     return decodedText;
                 }
-                catch (const nlohmann::json::exception& e) {
+                catch (const nlohmann::json::exception) {
                     return "";
                 }
             }

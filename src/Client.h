@@ -10,6 +10,8 @@
 #include <string>
 
 #include <nlohmann/json.hpp>
+
+#include "../build/Version.h"
 #include "server/Server.h"
 #include "security/Security.h"
 #include "licfile/LicFile.h"
@@ -19,6 +21,7 @@ using json = nlohmann::json;
 
 class Client {
 private:
+	const std::string clientVersion = VERSION;
 	std::string publicKey;
 	// Mode: Standalone, Online, LicenseManager (Intranet)
 	std::string mode;
@@ -36,15 +39,17 @@ private:
 	Validator validator;
 
 	std::string licFilepath;
-	std::string lmServer;
-	std::string lmPort;
+	std::string serverUrl;
+	std::string port;
 public:
 	// Constructor
 	Client(
 		const std::string applicationName,
 		const std::string applicationVersion,
-		const std::string publicKey
+		const std::string publicKey,
+		const std::string keyStorage
 	);
+	std::string getVersion();
 
 	// Vars
 	std::string applicationName;
@@ -58,8 +63,8 @@ public:
 	void setMode(
 		const std::string& mode,
 		const std::string& licFilepath,
-		const std::string& lmServer,
-		const std::string& lmPort
+		const std::string& serverUrl,
+		const std::string& port
 	);
 
 	std::string getSerialNo();

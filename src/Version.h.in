@@ -1,1 +1,1 @@
-#define VERSION "@VERSION@"
+#define VERSION "@LicClient_VERSION_MAJOR@.@LicClient_VERSION_MINOR@.@LicClient_VERSION_PATCH@"

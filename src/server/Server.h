@@ -14,7 +14,7 @@ class Server {
 private:
 	// Server for Online mode.
 	// const std::string server = "http://ia00074vma:6996/";
-	const std::string server = "http://localhost:6969/";
+	std::string server = "http://localhost:6969/";
 
 	Security* security;
 
@@ -22,7 +22,7 @@ private:
 	std::string get(const std::string& url);
 	std::string post(const std::string& url, const std::string& payload);
 public:
-	// Concstructor
+	// Constructor
 	Server(Security* security);
 
 	const std::string requestTypeRegister = "licenses/register/";
@@ -30,6 +30,7 @@ public:
 
 	// Functions
 	bool heartbeat();
+	void setUrl(const std::string& server);
 	std::string request(const std::string& requestType, const std::string& payload);
 };
 

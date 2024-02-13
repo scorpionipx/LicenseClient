@@ -29,7 +29,7 @@ using json = nlohmann::json;
 class Security {
 public:
 	// Constructor
-	Security();
+	Security(const std::string& keyStorage);
 	// Functions
 	std::string AESDecrypt(const std::string& ciphertext);
 	std::string AESEncrypt(const std::string& plaintext);
@@ -48,7 +48,7 @@ private:
 	void loadAESKey();
 
 	// Poor Stenography
-	const std::string imageFilepath = "d:/asammdf.png";
+	std::string keyStorage;
 	void setKey(const std::string& text);
 	std::string getKey();
 };

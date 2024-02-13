@@ -62,6 +62,10 @@ std::string Server::post(const std::string& url, const std::string& postData) {
     return readBuffer;
 }
 
+void Server::setUrl(const std::string& server) {
+    this->server = server;
+}
+
 std::string Server::request(const std::string& requestType, const std::string& payload) {
     std::ostringstream url;
     
