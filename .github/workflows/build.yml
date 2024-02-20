@@ -5,6 +5,7 @@ on: [push, pull_request]
 env:
   BRANCH: ${{ github.ref_name }}
   DEPENDENCIES: cryptopp cimg curl libpng nlohmann-json
+  VERSION: "0.1.0"
   WORKSPACE: ${{ github.workspace }}
 
 jobs:
