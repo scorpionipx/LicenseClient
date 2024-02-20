@@ -42,19 +42,20 @@ jobs:
         import pathlib
         import re
         import subprocess
-        
+
         branch = os.getenv("BUILD_BRANCH", "").split("/")[0]
-        latest_tag = subprocess.check_output('git describe --abbrev=0 --tags', universal_newlines=True)
-        version = re.search(pattern='v(?P<version>(\d+[.])+\d+)', string=latest_tag)
-        if not version:
-          version = '0.1.0'
+        try:
+            latest_tag = subprocess.check_output('git describe --abbrev=0 --tags', universal_newlines=True)
+        except subprocess.CalledProcessError:
+            version = '0.1.0'
         else:
-          major, minor, patch = version['version'].split('.')
-          if branch.isdigit():
-            patch = str(int(patch) + 1)
-          else:
-            minor = str(int(minor) + 1)
-          version = ".".join([major, minor, patch])
+            version = re.search(pattern='v(?P<version>(\d+[.])+\d+)', string=latest_tag)
+            major, minor, patch = version['version'].split('.')
+            if branch.isdigit():
+                patch = str(int(patch) + 1)
+            else:
+                minor = str(int(minor) + 1)
+            version = ".".join([major, minor, patch])
         os.environ["VERSION"] = version
 
     - name: Configure CMake
