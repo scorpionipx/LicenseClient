@@ -67,8 +67,8 @@ jobs:
             else:
                 minor = str(int(minor) + 1)
             version = ".".join([major, minor, patch])
-        with open(os.getenv("GITHUB_OUTPUT", ""), "w") as fpw:
-            fpw.write(version)
+        with open(os.getenv("GITHUB_OUTPUT", ""), "a") as fpa:
+            fpa.write(version)
 
     - name: Configure CMake
       run: cmake -Bbuild
