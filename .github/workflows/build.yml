@@ -5,11 +5,13 @@ on: [push, pull_request]
 env:
   BRANCH: ${{ github.ref_name }}
   DEPENDENCIES: cryptopp cimg curl libpng nlohmann-json
-  VERSION: "0.1.0"
   WORKSPACE: ${{ github.workspace }}
 
 jobs:
   build:
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
     runs-on: ${{ matrix.os }}
 
     permissions:
@@ -44,6 +46,7 @@ jobs:
           ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }}
 
     - name: Increment Version
+      id: version
       shell: python
       run: |
         import os
@@ -64,7 +67,8 @@ jobs:
             else:
                 minor = str(int(minor) + 1)
             version = ".".join([major, minor, patch])
-        os.environ["VERSION"] = version
+        with open(os.getenv("GITHUB_OUTPUT", ""), "w") as fpw:
+            fpw.write(version)
 
     - name: Configure CMake
       run: cmake -Bbuild
@@ -81,6 +85,8 @@ jobs:
             build/Release/LicClient.dll
 
     - name: Publish Release
+      env:
+        VERSION: ${{ steps.version.outputs.version }}
       if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
       uses: softprops/action-gh-release@v1
       with:
