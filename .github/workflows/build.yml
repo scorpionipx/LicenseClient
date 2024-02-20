@@ -68,7 +68,7 @@ jobs:
                 minor = str(int(minor) + 1)
             version = ".".join([major, minor, patch])
         with open(os.getenv("GITHUB_OUTPUT", ""), "a") as fpa:
-            fpa.write(version)
+            fpa.write(f"version={version}")
 
     - name: Configure CMake
       run: cmake -Bbuild
