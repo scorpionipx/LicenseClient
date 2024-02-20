@@ -72,3 +72,17 @@ jobs:
         if-no-files-found: error
         path: |
             build/Release/LicClient.dll
+
+    - name: Publish Release
+      id: release
+      if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
+      permissions:
+        contents: write
+      uses: softprops/action-gh-release@v1
+      with:
+        files: build/Release/LicClient.dll
+        generate_release_notes: true
+        name: LicenseClient_v${{ env.VERSION }}
+        prerelease: true
+        tag_name: v${{ env.VERSION }}
+
