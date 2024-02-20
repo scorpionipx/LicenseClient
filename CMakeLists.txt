@@ -1,7 +1,14 @@
 cmake_minimum_required(VERSION 3.10)
+
+if(DEFINED ENV{VERSION})
+    set(VERSION $ENV{VERSION})
+else()
+    set(VERSION 0.0.0)
+endif()
+
 project(
     LicClient
-    VERSION 1.0.0
+    VERSION ${VERSION}
     DESCRIPTION "Library for handling tool/package license validation"
     HOMEPAGE_URL "https://github.com/tov101/LicenseClient"
     LANGUAGES CXX
