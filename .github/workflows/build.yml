@@ -78,7 +78,6 @@ jobs:
             build/Release/LicClient.dll
 
     - name: Publish Release
-      id: release
       if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
       uses: softprops/action-gh-release@v1
       with:
