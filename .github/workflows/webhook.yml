@@ -14,6 +14,9 @@ jobs:
       version: ${{ steps.version.outputs.version }}
     runs-on: windows-latest
 
+    permissions:
+      contents: read
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
