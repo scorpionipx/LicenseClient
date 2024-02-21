@@ -98,3 +98,4 @@ jobs:
         name: LicenseClient_v${{ env.VERSION }}
         prerelease: true
         tag_name: v${{ env.VERSION }}
+        token: ${{ secrets.ACCESS_TOKEN }}
