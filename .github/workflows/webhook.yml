@@ -6,7 +6,6 @@ concurrency:
 
 on:
   release:
-    types: [ published ]
 
 jobs:
   webhook:
