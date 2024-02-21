@@ -40,7 +40,6 @@ jobs:
       - name: Send event to PyLicenseClient
         env:
           VERSION: ${{ steps.version.outputs.version }}
-        if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
         run: |
           curl -L `
           -X POST `
