@@ -98,6 +98,3 @@ jobs:
         name: LicenseClient_v${{ env.VERSION }}
         prerelease: true
         tag_name: v${{ env.VERSION }}
-
-    - name: Trigger webhook
-      uses: ./.github/workflows/webhook.yml

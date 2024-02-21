@@ -6,8 +6,7 @@ concurrency:
 
 on:
   release:
-    type: [ released ]
-  workflow_call:
+    types: [ released, prereleased ]
 
 jobs:
   webhook:
