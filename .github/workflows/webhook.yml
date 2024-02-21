@@ -5,7 +5,8 @@ concurrency:
   cancel-in-progress: true
 
 on:
-  release: [ prereleased, released ]
+  release:
+    types: [ prereleased, released ]
 
 jobs:
   webhook:
