@@ -40,7 +40,6 @@ if(WIN32)
 endif()
 
 find_package(CImg CONFIG REQUIRED)
-find_package(CryptoPP REQUIRED)
 find_package(CURL REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
@@ -54,7 +53,14 @@ add_library(LicClient SHARED ${HEADERS} ${SOURCES} version.rc)
 
 # Link dependencies
 target_link_options(LicClient PRIVATE "/NODEFAULTLIB:LIBCMT")
-target_link_libraries(LicClient PRIVATE CImg::CImg cryptopp CURL::libcurl nlohmann_json::nlohmann_json PNG::PNG ZLIB::ZLIB)
+target_link_libraries(
+    LicClient PRIVATE 
+    CImg::CImg 
+    CURL::libcurl 
+    nlohmann_json::nlohmann_json 
+    PNG::PNG 
+    ZLIB::ZLIB
+)
 
 # Include version header
 configure_file(src/Version.h.in Version.h)
