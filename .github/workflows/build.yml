@@ -43,6 +43,7 @@ jobs:
         git clone https://github.com/microsoft/vcpkg.git
         .\vcpkg\bootstrap-vcpkg.bat
         .\vcpkg\vcpkg integrate install
+        .\vcpkg\vcpkg install cryptopp --triplet x64-windows
         .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }} --triplet x64-windows-static
     
     - name: Install dependencies (Linux)
