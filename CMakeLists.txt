@@ -22,6 +22,8 @@ project(
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CPACK_SOURCE_GENERATOR "ZIP")
+# For static linking
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
 
 # Uncomment these lines for pdb generation
 # set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /Zi")
@@ -38,6 +40,7 @@ if(WIN32)
 endif()
 
 find_package(CImg CONFIG REQUIRED)
+find_package(CryptoPP REQUIRED)
 find_package(CURL REQUIRED)
 find_package(nlohmann_json REQUIRED)
 find_package(PNG REQUIRED)
@@ -50,7 +53,8 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_library(LicClient SHARED ${HEADERS} ${SOURCES} version.rc)
 
 # Link dependencies
-target_link_libraries(LicClient PRIVATE CImg::CImg CURL::libcurl nlohmann_json::nlohmann_json PNG::PNG ZLIB::ZLIB)
+target_link_options(LicClient PRIVATE "/NODEFAULTLIB:LIBCMT")
+target_link_libraries(LicClient PRIVATE CImg::CImg cryptopp CURL::libcurl nlohmann_json::nlohmann_json PNG::PNG ZLIB::ZLIB)
 
 # Include version header
 configure_file(src/Version.h.in Version.h)
