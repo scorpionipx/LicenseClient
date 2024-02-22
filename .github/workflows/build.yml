@@ -4,7 +4,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-on: 
+on:
   push:
     branches:
       - '*'
@@ -12,7 +12,8 @@ on:
 
 env:
   BRANCH: ${{ github.ref_name }}
-  DEPENDENCIES: cryptopp cimg curl libpng nlohmann-json
+  SHARED_DEPENDENCIES: cryptopp
+  STATIC_DEPENDENCIES: cimg curl libpng nlohmann-json
   WORKSPACE: ${{ github.workspace }}
 
 jobs:
@@ -28,79 +29,80 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest]
+        os: [ windows-latest ]
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        fetch-tags: true
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
-    - name: Install dependencies (Win)
-      if: ${{ matrix.os == 'windows-latest' }}
-      run: |
-        git clone https://github.com/microsoft/vcpkg.git
-        .\vcpkg\bootstrap-vcpkg.bat
-        .\vcpkg\vcpkg integrate install
-        .\vcpkg\vcpkg install cryptopp --triplet x64-windows
-        .\vcpkg\vcpkg install ${{ env.DEPENDENCIES }} --triplet x64-windows-static
-    
-    - name: Install dependencies (Linux)
-      if: ${{ matrix.os == 'ubuntu-latest' }}
-      run: |
+      - name: Install dependencies (Win)
+        if: ${{ matrix.os == 'windows-latest' }}
+        run: |
+          git clone https://github.com/microsoft/vcpkg.git
+          .\vcpkg\bootstrap-vcpkg.bat
+          .\vcpkg\vcpkg integrate install
+          .\vcpkg\vcpkg install ${{ env.SHARED_DEPENDENCIES }} --triplet x64-windows
+          .\vcpkg\vcpkg install ${{ env.STATIC_DEPENDENCIES }} --triplet x64-windows-static
+
+      - name: Install dependencies (Linux)
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: |
           git clone https://github.com/microsoft/vcpkg.git
           ./vcpkg/bootstrap-vcpkg.sh
           ./vcpkg/vcpkg integrate install
-          ./vcpkg/vcpkg install ${{ env.DEPENDENCIES }} --triplet x64-windows-static
+          ./vcpkg\vcpkg install ${{ env.SHARED_DEPENDENCIES }} --triplet x64-windows
+          ./vcpkg\vcpkg install ${{ env.STATIC_DEPENDENCIES }} --triplet x64-windows-static
 
-    - name: Increment Version
-      id: version
-      shell: python
-      run: |
-        import os
-        import re
-        import subprocess
+      - name: Increment Version
+        id: version
+        shell: python
+        run: |
+          import os
+          import re
+          import subprocess
+          
+          branch = os.getenv("BUILD_BRANCH", "").split("/")[0]
+          try:
+              latest_tag = subprocess.check_output('git describe --abbrev=0 --tags', universal_newlines=True)
+          except subprocess.CalledProcessError:
+              version = '0.1.0'
+          else:
+              version = re.search(pattern='v(?P<version>(\d+[.])+\d+)', string=latest_tag)
+              major, minor, patch = version['version'].split('.')
+              if branch.isdigit():
+                  patch = str(int(patch) + 1)
+              else:
+                  minor = str(int(minor) + 1)
+              version = ".".join([major, minor, patch])
+          with open(os.getenv("GITHUB_OUTPUT", ""), "a") as fpa:
+              fpa.write(f"version={version}")
 
-        branch = os.getenv("BUILD_BRANCH", "").split("/")[0]
-        try:
-            latest_tag = subprocess.check_output('git describe --abbrev=0 --tags', universal_newlines=True)
-        except subprocess.CalledProcessError:
-            version = '0.1.0'
-        else:
-            version = re.search(pattern='v(?P<version>(\d+[.])+\d+)', string=latest_tag)
-            major, minor, patch = version['version'].split('.')
-            if branch.isdigit():
-                patch = str(int(patch) + 1)
-            else:
-                minor = str(int(minor) + 1)
-            version = ".".join([major, minor, patch])
-        with open(os.getenv("GITHUB_OUTPUT", ""), "a") as fpa:
-            fpa.write(f"version={version}")
+      - name: Configure CMake
+        run: cmake -Bbuild
 
-    - name: Configure CMake
-      run: cmake -Bbuild
+      - name: Build
+        run: cmake --build build --config Release
 
-    - name: Build
-      run: cmake --build build --config Release
-     
-    - name: Archive dist artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: build
-        if-no-files-found: error
-        path: |
+      - name: Archive dist artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: build
+          if-no-files-found: error
+          path: |
             build/Release/LicClient.dll
 
-    - name: Publish Pre-release
-      env:
-        VERSION: ${{ steps.version.outputs.version }}
-      if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
-      uses: softprops/action-gh-release@v1
-      with:
-        files: build/Release/LicClient.dll
-        generate_release_notes: true
-        name: LicenseClient_v${{ env.VERSION }}
-        prerelease: true
-        tag_name: v${{ env.VERSION }}
-        token: ${{ secrets.ACCESS_TOKEN }}
+      - name: Publish Pre-release
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        if: ${{ github.event_name == 'push' && github.ref_name == 'master'}}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/Release/LicClient.dll
+          generate_release_notes: true
+          name: LicenseClient_v${{ env.VERSION }}
+          prerelease: true
+          tag_name: v${{ env.VERSION }}
+          token: ${{ secrets.ACCESS_TOKEN }}
