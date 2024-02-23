@@ -58,14 +58,15 @@ public:
 
 	// Functions
 	std::string collectData();
-	bool loadLicense(const std::string& serialNo);
+	bool loadLicense();
 
 	std::string getMode();
 	void setMode(
 		const std::string& mode,
 		const std::string& licFilepath,
 		const std::string& serverUrl,
-		const std::string& port
+		const std::string& port,
+		const std::string& serialNumber
 	);
 
 	std::string getSerialNo();

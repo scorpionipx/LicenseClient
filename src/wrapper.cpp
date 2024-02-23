@@ -36,8 +36,9 @@ extern "C"
 		std::string licFilepath = params[0];
 		std::string serverUrl = params[1];
 		std::string port = params[2];
+		std::string serialNumber = params[3];
 
-		client->setMode(mode, licFilepath, serverUrl, port);
+		client->setMode(mode, licFilepath, serverUrl, port, serialNumber);
 	}
 
 	// Export SerialNo
@@ -58,9 +59,9 @@ extern "C"
 	}
 
 	// Export loadLicense function
-	__declspec(dllexport) bool loadLicense(Client* client, const char* serialNo) {
+	__declspec(dllexport) bool loadLicense(Client* client) {
 		try {
-			return client->loadLicense(serialNo);
+			return client->loadLicense();
 		} catch (const std::exception& ex) {
 			std::cerr << "Error in loadLicense: " << ex.what() << std::endl;
 			return false;

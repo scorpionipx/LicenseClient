@@ -30,7 +30,8 @@ void Client::setMode(
 	const std::string& mode,
 	const std::string& licFilepath,
 	const std::string& serverUrl,
-	const std::string& port
+	const std::string& port,
+	const std::string& serialNumber
 ) {
 	if (mode != modeStandalone and mode != modeLicenseManager and mode != modeOnline) {
 		return;
@@ -39,6 +40,7 @@ void Client::setMode(
 	this->port = port;
 	this->serverUrl = serverUrl;
 	this->mode = mode;
+	this->serialNo = serialNumber;
 }
 
 std::string Client::getSerialNo() {
@@ -78,10 +80,9 @@ std::string Client::collectData() {
 	return cipherPayload;
 }
 
-bool Client::loadLicense(const std::string& serialNo) {
+bool Client::loadLicense() {
 	
 	bool result = false;
-	this->serialNo = serialNo;
 
 	if (mode == modeOnline) {
 		// Collect Data & Key Exchange
