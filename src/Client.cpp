@@ -9,7 +9,10 @@ Client::Client(
 	const std::string publicKey,
 	const std::string keyStorage
 ):
-	validator(applicationName, applicationVersion), security(keyStorage) {
+	validator(applicationName, applicationVersion),
+	security(keyStorage),
+	licManager(applicationName, applicationVersion, &security)
+{
 	// Store Vars
 	this->applicationName = applicationName;
 	this->applicationVersion = applicationVersion;
@@ -94,7 +97,10 @@ bool Client::loadLicense() {
 	} else if (mode == modeStandalone) {
 		result = licFile.loadFile(licFilepath);
 	} else if (mode == modeLicenseManager) {
-		result = false;
+		licManager.connect(serverUrl, port);
+		// Collect Data & Key Exchange
+		std::string licenseContent = licManager.acquire();
+		result = licFile.loadContent(licenseContent);
 	}
 	else {
 		result = false;

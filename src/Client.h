@@ -12,6 +12,7 @@
 #include <nlohmann/json.hpp>
 
 #include "../build/Version.h"
+#include "licmanager/LicManager.h"
 #include "server/Server.h"
 #include "security/Security.h"
 #include "licfile/LicFile.h"
@@ -35,6 +36,8 @@ private:
 	LicFile licFile = LicFile(&security);
 	// Server
 	Server server = Server(&security);
+	// LicManager
+	LicManager licManager;
 	// Validator
 	Validator validator;
 

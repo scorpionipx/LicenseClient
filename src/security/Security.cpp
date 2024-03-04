@@ -11,7 +11,6 @@ Security::Security(const std::string& keyStorage) {
     AESkey.resize(AES::DEFAULT_KEYLENGTH);   
 
     if (getKey() == "") {
-        std::cout << "GenerateKey called.." << std::endl;
         // Generate AES Key
         generateAESKey();
 
@@ -21,7 +20,6 @@ Security::Security(const std::string& keyStorage) {
     }
     else {
         // Load Key
-        std::cout << "LoadKey called.." << std::endl;
         loadAESKey();
     }
 }
