@@ -32,10 +32,30 @@ void Security::generateAESKey() {
     rng.GenerateBlock(initVector, sizeof(initVector));
 }
 
-std::string Security::AESDecrypt(const std::string& ciphertext) {
+std::string Security::AESDecrypt(const std::string& ciphertext, const std::string& aesKey, const std::string& iv) {
     std::string decrypted;
+    CBC_Mode<AES>::Decryption decryption;
 
-    CBC_Mode<AES>::Decryption decryption(AESkey, AESkey.size(), initVector);
+    if (aesKey != "") {
+        // Load Keys
+        SecByteBlock _aesKey(aesKey.size());
+        byte _iv[AES::BLOCKSIZE];
+
+        if (iv != "") {
+            memcpy(_iv, iv.data(), iv.size());
+        }
+        else {
+            memcpy(_iv, initVector, sizeof(initVector));
+        }
+
+        memcpy(_aesKey, aesKey.data(), aesKey.size());
+
+        decryption.SetKeyWithIV(_aesKey, _aesKey.size(), _iv);
+    }
+    else {
+        decryption.SetKeyWithIV(AESkey, AESkey.size(), initVector);
+    }
+
     StringSource(
         ciphertext,
         true,
@@ -45,14 +65,35 @@ std::string Security::AESDecrypt(const std::string& ciphertext) {
     return decrypted;
 }
 
-std::string Security::AESEncrypt(const std::string& plaintext) {
+std::string Security::AESEncrypt(const std::string& plaintext, const std::string& aesKey, const std::string& iv) {
     std::string ciphertext;
+    CBC_Mode<AES>::Encryption encryption;
 
-    CBC_Mode<AES>::Encryption encryption(AESkey, AESkey.size(), initVector);
+    if (aesKey != "" && iv != "") {
+        // Load Keys
+        SecByteBlock _aesKey(aesKey.size());
+        byte _iv[AES::BLOCKSIZE];
+
+        if (iv != "") {
+            memcpy(_iv, iv.data(), iv.size());
+        }
+        else {
+            memcpy(_iv, initVector, sizeof(initVector));
+        }
+
+        memcpy(_aesKey, aesKey.data(), aesKey.size());
+
+        encryption.SetKeyWithIV(_aesKey, _aesKey.size(), _iv);
+    }
+    else {
+        encryption.SetKeyWithIV(AESkey, AESkey.size(), initVector);
+    }
+
     StringSource(
         plaintext,
         true,
-        new StreamTransformationFilter(encryption, new StringSink(ciphertext)));
+        new StreamTransformationFilter(encryption, new StringSink(ciphertext))
+    );
 
     return ciphertext;
 }

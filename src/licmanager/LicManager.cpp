@@ -38,8 +38,17 @@ std::string LicManager::receive() {
     return std::string(buffer, bytesReceived);
 }
 
-void LicManager::exchange() {
+std::string LicManager::exchange() {
     json payload;
+    std::string response;
+
+    std::string sharedKeyClientStr;
+    std::string initVectorStr;
+
+    std::string plainText;
+    std::string cipherText;
+
+    byte initVector[AES::BLOCKSIZE];
 
     // Domain parameters
     OID CURVE = ASN1::secp256k1();
@@ -56,12 +65,11 @@ void LicManager::exchange() {
     ECPPoint p = params.DecodeElement(pubKey.BytePtr(), true);
 
     // Send Exchange Key Command
-    payload["command"] = commandExchange;
-    payload["payload"] = { {"x", IntToString(p.x)}, {"y", IntToString(p.y)} };
+    payload = { {"x", IntToString(p.x)}, {"y", IntToString(p.y)} };
     send(payload.dump());
 
     // Receive public Key
-    std::string response = receive();
+    response = receive();
     SecByteBlock publicKeyManager(response.size());
     publicKeyManager.Assign(reinterpret_cast<const byte*>(response.data()), response.size());
 
@@ -72,79 +80,64 @@ void LicManager::exchange() {
     if (!ecdh.Agree(sharedKeyClient, privKey, publicKeyManager))
         throw std::runtime_error("Secret Client: NOK");
 
-    std::string sharedKeyClientStr = stringToHex(std::string(reinterpret_cast<const char*>(sharedKeyClient.data()), sharedKeyClient.size()));
+    sharedKeyClientStr = std::string(reinterpret_cast<const char*>(sharedKeyClient.data()), sharedKeyClient.size());
 
-    // Send My Key
-    byte initVector[AES::BLOCKSIZE];
-    std::string ciphertext;
-    std::string plainText = security->getAESKey();
-
-    // Generate a random IV
+    // Send IV && Generate a random IV
     rng.GenerateBlock(initVector, sizeof(initVector));
-    send(stringToHex(std::string(reinterpret_cast<const char*>(initVector), sizeof(initVector))));
+    initVectorStr = std::string(reinterpret_cast<const char*>(initVector), sizeof(initVector));
+    send(stringToHex(initVectorStr));
 
-    // Encrypt Key
-    CBC_Mode<AES>::Encryption encryption(sharedKeyClient, sharedKeyClient.size(), initVector);
-    StringSource(
-        plainText,
-        true,
-        new StreamTransformationFilter(encryption, new StringSink(ciphertext))
-    );
-    send(stringToHex(ciphertext));
+    // Get and Decrypt Manager Keys
+    response = receive();
+
+    // Send and Encrypt Client Keys
+    cipherText = security->AESEncrypt(security->getAESKey(), sharedKeyClientStr, initVectorStr);
+    send(stringToHex(cipherText));
+
+    return sharedKeyClientStr;
 }
 
 std::string LicManager::acquire() {
     json payload;
 
-    // Key Exchange
-    exchange();
-    
-    // Set command to "acquire"
+    // Initiate Acquire Process
     payload["command"] = commandAcquire;
-    payload["payload"] = { { "application", application}, {"version" , version} };
+    payload["content"] = { { "application", application}, {"version" , version} };
+    send(payload.dump());
 
-    // Encrypt
-    const std::string& cipherText = security->AESEncrypt(payload.dump());
+    // Wait to see if there is any License available
+    json response = json::parse(receive());
+    if (response["return_code"] == 1)
+        return nullptr;
 
+    // Key Exchange
+    const std::string& sharedKey = exchange();
+
+    // Encrypt with Client Key
+    // const std::string& cipherText = security->AESEncrypt(payload.dump());
     // Send
-    send(cipherText);
+    // send(cipherText);
 
-    // Receive
-    const std::string& response = receive();
-    
-    // Decrypt
-    const std::string& plainText = security->AESDecrypt(response);
+    // Receive License
+    response = receive();
+    // Decrypt with Manager Key
+    const std::string& plainTextManager = security->AESDecrypt(response, sharedKey);
 
-    // Parse
-    json responseContent = json::parse(plainText);
-
-    if (responseContent["return_code"] == 0) {
-        acquiredSN = responseContent["serial_number"];
-        return responseContent["license"];
-    }
-
-    return nullptr;
+    return plainTextManager;
 }
 
 void LicManager::release() {
-    json data;
+    json payload;
 
     // Set command to "release"
-    data["command"] = commandRelease;
-    data["payload"] = { { "application", application}, {"version" , version}, {"serial_number", acquiredSN} };
-    // Encrypt
+    payload["command"] = commandRelease;
+    payload["payload"] = { { "application", application}, {"version" , version}, {"serial_number", acquiredSN} };
+    
+    // Encrypt with Client Key
+    const std::string& cipherText = security->AESEncrypt(payload.dump());
     
     // Send
-    std::string payload = data.dump();
-    send(payload);
+    send(cipherText);
 
-    // Receive
-    json response = json::parse(receive());
-
-    // Decrypt
-
-
-    if (response["return_code"] == 0) {
-        acquiredSN = "";
-    }
+    acquiredSN = "";
 }

@@ -75,5 +75,22 @@ extern "C"
 		return licenseData.c_str();
 	}
 
-	// Export registerLicense
+	// Export LicFile
+	__declspec(dllexport) const char* readLicense(const char* licenseFilepath, const char* keyStorage) {
+		try {
+			json content;
+			Security security = Security(keyStorage);
+			LicFile licFile = LicFile(&security);
+			licFile.loadFile(licenseFilepath);
+			
+			content["application"] = licFile.getApplication();
+			content["version"] = licFile.getVersion();
+			content["serialNo"] = licFile.getSerialNo();
+			content["expireDate"] = licFile.getExpiryDate();
+			return content.dump().c_str();
+		} catch (const std::exception& ex) {
+			std::cerr << "Error in readLicense: " << ex.what() << std::endl;
+		}
+		return nullptr;
+	}
 };

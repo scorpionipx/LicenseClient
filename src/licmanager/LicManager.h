@@ -3,14 +3,6 @@
 #include <iostream>
 #include <boost/asio.hpp>
 
-#include <cryptopp/dh.h>
-#include <cryptopp/dh2.h>
-#include <cryptopp/eccrypto.h>
-#include <cryptopp/oids.h>
-#include <cryptopp/osrng.h>
-#include <cryptopp/secblock.h>
-#include <cryptopp/hex.h>
-
 #include "../security/Security.h"
 
 using boost::asio::ip::tcp;
@@ -40,8 +32,8 @@ private:
     std::string version;
     std::string acquiredSN;
 
+    std::string exchange();
     void send(const std::string& message);
     std::string receive();
-    void exchange();
 };
 
