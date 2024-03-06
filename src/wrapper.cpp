@@ -20,6 +20,11 @@ extern "C"
 			return nullptr;
 		}
 	}
+	// LicenseClient Cleanup: Destructor
+	__declspec(dllexport) void cleanup(Client* client) {
+		delete client;
+	}
+
 	// Export Client Version
 	__declspec(dllexport) const char* getVersion(Client* client) {
 		const std::string& version = client->getVersion();
@@ -85,8 +90,8 @@ extern "C"
 			
 			content["application"] = licFile.getApplication();
 			content["version"] = licFile.getVersion();
-			content["serialNo"] = licFile.getSerialNo();
-			content["expireDate"] = licFile.getExpiryDate();
+			content["serial_no"] = licFile.getSerialNo();
+			content["expiry_date"] = licFile.getExpiryDate();
 			return content.dump().c_str();
 		} catch (const std::exception& ex) {
 			std::cerr << "Error in readLicense: " << ex.what() << std::endl;

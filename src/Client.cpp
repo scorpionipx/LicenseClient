@@ -20,8 +20,10 @@ Client::Client(
 	this->security.setOwnerRSAPublicKey(publicKey);
 }
 Client::~Client() {
-	if (mode == modeLicenseManager && licManager.acquiredSN != "")
+	if (mode == modeLicenseManager && licManager.acquiredSN != "") {
+		licManager.connect(serverUrl, port);
 		licManager.release();
+	}
 }
 
 std::string Client::getVersion() {
@@ -105,9 +107,7 @@ bool Client::loadLicense() {
 		// Collect Data & Key Exchange
 		std::string licenseContent = licManager.acquire();
 		result = licFile.loadContent(licenseContent);
-		if (result) {
-			licManager.acquiredSN = getSerialNo();
-		}
+		licManager.acquiredSN = getSerialNo();
 	}
 	else {
 		result = false;

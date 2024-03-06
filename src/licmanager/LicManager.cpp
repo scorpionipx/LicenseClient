@@ -137,7 +137,7 @@ void LicManager::release() {
 
     // Initiate Rrelease process
     payload["command"] = commandRelease;
-    payload["payload"] = { { "application", application}, {"version" , version}, {"serial_number", acquiredSN} };
+    payload["content"] = { { "application", application}, {"version" , version}, {"serial_number", acquiredSN} };
     
     // Encrypt with Client Key
     const std::string& cipherText = security->AESEncrypt(payload.dump());
