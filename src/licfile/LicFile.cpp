@@ -44,11 +44,6 @@ bool LicFile::loadFile(const std::string& filePath) {
 	// Close the file
 	inputFile.close();
 
-	if (fileContent == "") {
-		std::cerr << "LicFile is empty." << std::endl;
-		return false;
-	}
-
 	if (loadContent(fileContent) == false) {
 		return false;
 	}
@@ -58,6 +53,11 @@ bool LicFile::loadFile(const std::string& filePath) {
 
 bool LicFile::loadContent(const std::string& content) {
 	this->filePath = "";
+
+	if (content == "") {
+		std::cerr << "LicFile is empty." << std::endl;
+		return false;
+	}
 
 	// Decrypt Content
 	this->fileContent = security->AESDecrypt(content);

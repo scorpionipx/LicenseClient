@@ -52,6 +52,7 @@ public:
 		const std::string publicKey,
 		const std::string keyStorage
 	);
+	~Client();
 	std::string getVersion();
 
 	// Vars

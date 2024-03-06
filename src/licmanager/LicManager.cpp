@@ -39,6 +39,7 @@ std::string LicManager::receive() {
 }
 
 std::string LicManager::exchange() {
+    json content;
     json payload;
     std::string response;
 
@@ -87,12 +88,15 @@ std::string LicManager::exchange() {
     initVectorStr = std::string(reinterpret_cast<const char*>(initVector), sizeof(initVector));
     send(stringToHex(initVectorStr));
 
-    // Get and Decrypt Manager Keys
-    response = receive();
+    // Dummy wait
+    receive();
 
     // Send and Encrypt Client Keys
     cipherText = security->AESEncrypt(security->getAESKey(), sharedKeyClientStr, initVectorStr);
     send(stringToHex(cipherText));
+
+    // Dummy wait
+    receive();
 
     return sharedKeyClientStr;
 }
@@ -100,36 +104,38 @@ std::string LicManager::exchange() {
 std::string LicManager::acquire() {
     json payload;
 
-    // Initiate Acquire Process
-    payload["command"] = commandAcquire;
-    payload["content"] = { { "application", application}, {"version" , version} };
-    send(payload.dump());
-
-    // Wait to see if there is any License available
-    json response = json::parse(receive());
-    if (response["return_code"] == 1)
-        return nullptr;
-
     // Key Exchange
     const std::string& sharedKey = exchange();
 
+    // Initiate Acquire Process
+    payload["command"] = commandAcquire;
+    payload["content"] = { { "application", application}, {"version" , version} };
+
     // Encrypt with Client Key
-    // const std::string& cipherText = security->AESEncrypt(payload.dump());
+     const std::string& cipherText = security->AESEncrypt(payload.dump());
     // Send
-    // send(cipherText);
+     send(cipherText);
 
     // Receive License
-    response = receive();
+    const std::string& response = receive();
+
     // Decrypt with Manager Key
     const std::string& plainTextManager = security->AESDecrypt(response, sharedKey);
 
-    return plainTextManager;
+    json content = json::parse(plainTextManager);
+    if (content["return_code"] == 1)
+        return "";
+
+    return hexToString(content["content"]);
 }
 
 void LicManager::release() {
     json payload;
 
-    // Set command to "release"
+    // Key Exchange
+    const std::string& sharedKey = exchange();
+
+    // Initiate Rrelease process
     payload["command"] = commandRelease;
     payload["payload"] = { { "application", application}, {"version" , version}, {"serial_number", acquiredSN} };
     

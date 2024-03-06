@@ -16,6 +16,8 @@ public:
     const std::string commandAcquire = "acquire";
     const std::string commandRelease = "release";
     const std::string commandExchange = "exchange";
+
+    std::string acquiredSN;
     
     void connect(std::string host, std::string port);
     std::string acquire();
@@ -30,7 +32,6 @@ private:
 
     std::string application;
     std::string version;
-    std::string acquiredSN;
 
     std::string exchange();
     void send(const std::string& message);
